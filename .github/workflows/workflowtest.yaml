@@ -22,12 +22,18 @@ jobs:
     runs-on: [self-hosted, "${{ matrix.runner }}"]
 
     steps:
-
-      - name: Run a Sample Script
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+         submodules: recursive
+        
+      - name: Perform a basic UFS Weather Model build 
         run: |
           echo "Running on runner: ${{ matrix.runner }}"
-          echo "Hostname of the machine:"
-          hostname
+          module use modulefiles
+          module load ufs_${{ matrix.runner }}.intel
+          export CMAKE_FLAGS="-DAPP=ATM -DCCPP_SUITES=FV3_GFS_v17_p8"
+          ./build.sh 
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
