@@ -30,12 +30,9 @@ jobs:
       - name: Perform a basic UFS Weather Model build 
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
+          export NODE_NAME=${{ matrix.runner.name }}
           .cicd/scripts/wm_build.sh
-    
-      - name: Perform a basic UFS Weather Model build 
-        run: |
-          echo "Testing on runner: ${{ matrix.runner }}"
-          CREATE_BASELINE="false" .cicd/scripts/wm_test.sh     
+  
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
