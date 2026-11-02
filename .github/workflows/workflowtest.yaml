@@ -37,6 +37,7 @@ jobs:
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
+          if [ -z "$ACCNR" ]; then ACCNR="epic" fi
           CREATE_BASELINES=false .cicd/scripts/wm_test.sh    
           
       - name: Send Slack Notification
