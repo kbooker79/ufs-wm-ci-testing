@@ -27,12 +27,17 @@ jobs:
         with:
          submodules: recursive
         
-      - name: Perform a basic UFS Weather Model build 
+      - name: UFS Weather Model build 
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
           .cicd/scripts/wm_build.sh
   
+      - name: UFS Weather Model test
+        run: |
+          echo "Building on runner: ${{ matrix.runner }}"
+          export NODE_NAME=${{ matrix.runner }}
+          CREATE_BASELINES=false .cicd/scripts/wm_test.sh    
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
