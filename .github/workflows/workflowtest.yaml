@@ -30,7 +30,7 @@ jobs:
       - name: Perform a basic UFS Weather Model build 
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
-          export NODE_NAME=${{ matrix.runner.name }}
+          export NODE_NAME=${{ matrix.runner }}
           .cicd/scripts/wm_build.sh
   
           
