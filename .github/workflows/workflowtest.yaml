@@ -37,8 +37,7 @@ jobs:
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
-          export ACCNR=epic
-          CREATE_BASELINES=false .cicd/scripts/wm_test.sh    
+          tests/./rt.sh -a epic -e -n "control_p8 intel"   
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
