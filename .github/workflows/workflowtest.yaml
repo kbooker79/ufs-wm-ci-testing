@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: UFS Community Basic Workflow Test
+name: UFS Community Test Self Hosted Runners
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
