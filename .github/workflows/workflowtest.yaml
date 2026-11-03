@@ -39,6 +39,8 @@ jobs:
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
+          export ACCNR=epic
+          sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh   
           
       - name: Send Slack Notification
