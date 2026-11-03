@@ -38,7 +38,8 @@ jobs:
       - name: UFS Weather Model test
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
-          export NODE_NAME=${{ matrix.runner }}
+          export RUNNER_NAME=${{ matrix.runner }}
+          export NODE_NAME="${RUNNER_NAME^}"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh   
