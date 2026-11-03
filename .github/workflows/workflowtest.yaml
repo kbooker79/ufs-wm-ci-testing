@@ -15,11 +15,13 @@ jobs:
   run-on-runners:
     name: Execute on Selected Runner
     strategy:
+      fail-fast: false
       matrix:
         runner: [orion, hercules, gaeac6, ursa]
     
     # self-hosted is required, followed by the specific runner label from the matrix
     runs-on: [self-hosted, "${{ matrix.runner }}"]
+      
 
     steps:
       - name: Checkout repo
