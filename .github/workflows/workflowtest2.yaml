@@ -40,7 +40,17 @@ jobs:
           export NODE_NAME="${RUNNER_NAME^}"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
-          CREATE_BASELINE=false .cicd/scripts/wm_test.sh   
+          CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3
+          aws-region: us-east-1
+
+      - name: Upload Files to S3 via AWS CLI
+        run: |
+          aws s3 sync ./${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --delete
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
