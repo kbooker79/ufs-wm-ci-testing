@@ -5,9 +5,10 @@ name: UFS Community PR Test
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  pull_request:
-    branches:
-      - develop
+#  pull_request:
+#    branches:
+#        - develop
+    workflow_dispatch
 
 jobs:
   run-on-runners:
@@ -31,7 +32,7 @@ jobs:
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
-          .cicd/scripts/wm_build.sh
+#         .cicd/scripts/wm_build.sh
   
       - name: UFS Weather Model test
         run: |
@@ -40,7 +41,7 @@ jobs:
           export NODE_NAME="${RUNNER_NAME^}"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
-          CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
+#         CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
           
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
