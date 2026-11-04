@@ -1,15 +1,13 @@
 # This is a basic workflow that is manually triggered
 
-name: UFS Community Test Self Hosted Runners
+name: UFS Community PR Test
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  # uncomment to run on push
-  #push:
-    #branches:
-      #- main
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   run-on-runners:
@@ -21,7 +19,7 @@ jobs:
     
     # self-hosted is required, followed by the specific runner label from the matrix
     runs-on: [self-hosted, "${{ matrix.runner }}"]
-      
+    environment: develop  
 
     steps:
       - name: Checkout repo
