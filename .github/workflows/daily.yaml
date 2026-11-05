@@ -7,8 +7,7 @@ name: UFS Weather Model Nightly Build/Test Github Actions
 on:
   schedule:
     - cron: '0 1 * * *'
-    workflow_dispatch
-
+  workflow_dispatch:
 
 jobs:
   run-on-runners:
