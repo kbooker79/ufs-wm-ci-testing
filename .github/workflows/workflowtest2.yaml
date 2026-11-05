@@ -9,6 +9,9 @@ on:
 #    branches:
 #        - develop
     workflow_dispatch
+permissions:
+      id-token: write
+      contents: read 
 
 jobs:
   run-on-runners:
@@ -21,9 +24,7 @@ jobs:
     # self-hosted is required, followed by the specific runner label from the matrix
     runs-on: [self-hosted, "${{ matrix.runner }}"]
     environment: develop  
-    permissions:
-      id-token: write # 🛑 REQUIRED FOR OIDC
-      contents: read  # Required if you use actions/checkout
+    
 
     steps:
       - name: Checkout repo
