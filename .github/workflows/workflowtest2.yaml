@@ -23,7 +23,6 @@ jobs:
     
     # self-hosted is required, followed by the specific runner label from the matrix
     runs-on: [self-hosted, "${{ matrix.runner }}"]
-    environment: develop  
     
 
     steps:
