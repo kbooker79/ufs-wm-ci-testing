@@ -45,6 +45,8 @@ jobs:
           export NODE_NAME="${RUNNER_NAME^}"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
+          export WM_REGRESSION_TESTS=true
+          export WM_OPERATIONAL_TESTS=control_c48
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
           
       - name: Configure AWS Credentials
