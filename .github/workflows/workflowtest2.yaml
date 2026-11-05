@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload Files to S3 via AWS CLI
         run: |
-          aws s3 sync ./${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --delete
+          aws s3 sync ${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --delete
           
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
