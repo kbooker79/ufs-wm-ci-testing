@@ -1,0 +1,70 @@
+# This is a basic workflow that is manually triggered
+
+name: UFS Weather Model Nightly Build/Test Github Actions
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  schedule:
+    - cron: '0 1 * * *'
+    workflow_dispatch
+
+
+jobs:
+  run-on-runners:
+    name: Execute on Selected Runner
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [orion, hercules, gaeac6, ursa]
+    
+    # self-hosted is required, followed by the specific runner label from the matrix
+    runs-on: [self-hosted, "${{ matrix.runner }}"]
+    permissions:
+      id-token: write
+      contents: read 
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+         submodules: recursive
+        
+      - name: UFS Weather Model build 
+        run: |
+          echo "Building on runner: ${{ matrix.runner }}"
+          export NODE_NAME=${{ matrix.runner }}
+          .cicd/scripts/wm_build.sh
+  
+      - name: UFS Weather Model test
+        run: |
+          echo "Building on runner: ${{ matrix.runner }}"
+          export RUNNER_NAME=${{ matrix.runner }}
+          export NODE_NAME="${RUNNER_NAME^}"
+          export ACCNR=epic
+          sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
+          export WM_REGRESSION_TESTS=true
+          export WM_OPERATIONAL_TESTS=control_c48
+          CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
+          aws-region: us-east-1
+
+      - name: Upload Files to S3 via AWS CLI
+        run: |
+          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/
+          
+      - name: Send Slack Notification
+        if: always() 
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "C0C7AJ84X3P", 
+              "text": ":epic: *${{ github.workflow }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+            }
