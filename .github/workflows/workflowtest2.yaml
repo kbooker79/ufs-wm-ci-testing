@@ -9,9 +9,7 @@ on:
 #    branches:
 #        - develop
     workflow_dispatch
-permissions:
-      id-token: write
-      contents: read 
+
 
 jobs:
   run-on-runners:
@@ -23,7 +21,9 @@ jobs:
     
     # self-hosted is required, followed by the specific runner label from the matrix
     runs-on: [self-hosted, "${{ matrix.runner }}"]
-    
+    permissions:
+      id-token: write
+      contents: read 
 
     steps:
       - name: Checkout repo
