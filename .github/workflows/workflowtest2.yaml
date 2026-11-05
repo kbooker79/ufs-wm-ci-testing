@@ -46,7 +46,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3
+          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
           aws-region: us-east-1
 
       - name: Upload Files to S3 via AWS CLI
