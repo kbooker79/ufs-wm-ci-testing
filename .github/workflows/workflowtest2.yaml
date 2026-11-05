@@ -57,9 +57,10 @@ jobs:
 
       - name: Upload Files to S3 via AWS CLI
         run: |
-          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test
+          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/
           
       - name: Send Slack Notification
+        if: always() 
         uses: slackapi/slack-github-action@v2.0.0
         with:
           method: chat.postMessage
