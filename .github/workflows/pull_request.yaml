@@ -42,7 +42,7 @@ jobs:
           echo "Building on runner: ${{ matrix.runner }}"
           export RUNNER_NAME=${{ matrix.runner }}
           export NODE_NAME="${RUNNER_NAME^}"
-          export UFS_PLATFORM="${RUNNER_NAME^}"
+          export UFS_PLATFORM="${RUNNER_NAME}"
           export UFS_COMPILER="intel"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
