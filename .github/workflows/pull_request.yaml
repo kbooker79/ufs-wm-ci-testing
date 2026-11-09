@@ -49,9 +49,18 @@ jobs:
           export WM_REGRESSION_TESTS=true
           export WM_OPERATIONAL_TESTS=control_c48
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
-          sleep 5
+
+
+      - name: UFS Weather Model Post Test Results 
+        run: |
+          export RUNNER_NAME=${{ matrix.runner }}
+          export NODE_NAME="${RUNNER_NAME^}"
+          export UFS_PLATFORM="${RUNNER_NAME^}"
+          export UFS_COMPILER="intel"
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
-          
+          cd ${GITHUB_WORKSPACE}
+          .cicd/scripts/post_test_results.sh 
+      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -60,7 +69,8 @@ jobs:
 
       - name: Upload Files to S3 via AWS CLI
         run: |
-          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/RegressionTests_${{ matrix.runner }}.log s3://noaa-epic-prod-jenkins-artifacts/kb-test/
+          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
+
           
       - name: Send Slack Notification
         if: always() 
