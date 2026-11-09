@@ -42,11 +42,15 @@ jobs:
           echo "Building on runner: ${{ matrix.runner }}"
           export RUNNER_NAME=${{ matrix.runner }}
           export NODE_NAME="${RUNNER_NAME^}"
+          export UFS_PLATFORM="${RUNNER_NAME^}"
+          export UFS_COMPILER="intel"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           export WM_REGRESSION_TESTS=true
           export WM_OPERATIONAL_TESTS=control_c48
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
+          sleep 5
+          [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
