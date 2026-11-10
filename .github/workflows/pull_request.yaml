@@ -5,8 +5,9 @@ name: UFS Weather Model PR Test
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+ pull_request_target:
+    branches:
+      - develop
         
   workflow_dispatch: 
 jobs:
@@ -57,6 +58,7 @@ jobs:
           export NODE_NAME="${RUNNER_NAME^}"
           export UFS_PLATFORM="${RUNNER_NAME}"
           export UFS_COMPILER="intel"
+          export label=RT
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           cd ${GITHUB_WORKSPACE}
           .cicd/scripts/post_test_results.sh 
