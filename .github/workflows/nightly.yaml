@@ -42,6 +42,7 @@ jobs:
           export RUNNER_NAME=${{ matrix.runner }}
           export NODE_NAME="${RUNNER_NAME^}"
           export ACCNR=epic
+          export UFS_COMPILER=oneapi
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           export WM_REGRESSION_TESTS=true
           export WM_OPERATIONAL_TESTS=control_c48
