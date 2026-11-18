@@ -12,6 +12,7 @@ permissions:
 jobs:
   run-on-runners:
     name: Execute on Selected Runner
+    if: always()
     strategy:
       fail-fast: false
       matrix:
@@ -25,12 +26,14 @@ jobs:
       pull-requests: write
     steps:
       - name: Configure AWS Credentials
+        if: always()
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
           aws-region: us-east-1
 
       - name: Upload Files to S3 via AWS CLI
+        if: always()
         run: |
           aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
       - name: Send Slack Notification
