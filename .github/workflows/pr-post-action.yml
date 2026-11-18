@@ -10,10 +10,10 @@ permissions:
 
 jobs:
   post-build:
-    name: Post-Build (${{ github.event.client_payload.runner }})
+    name: Post-Build (${{ github.event.client_payload.node }})
     if: always()
     # Targets ONLY the specific node that just finished upstream
-    runs-on: [self-hosted, "${{ github.event.client_payload.runner }}"]
+    runs-on: [self-hosted, "${{ github.event.client_payload.node }}"]
     permissions:
       id-token: write
       contents: read 
