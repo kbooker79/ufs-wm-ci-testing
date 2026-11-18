@@ -1,0 +1,47 @@
+name: Pull Request Post-Action
+on:
+  workflow_run:
+    workflows: ["UFS Weather Model PR Test"] # Must match the exact name of Step 1's workflow
+    types:
+      - completed
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  run-on-runners:
+    name: Execute on Selected Runner
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [orion, hercules, gaeac6, ursa]
+    
+    # self-hosted is required, followed by the specific runner label from the matrix
+    runs-on: [self-hosted, "${{ matrix.runner }}"]
+    permissions:
+      id-token: write
+      contents: read 
+      pull-requests: write
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
+          aws-region: us-east-1
+
+      - name: Upload Files to S3 via AWS CLI
+        run: |
+          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
+      - name: Send Slack Notification
+        if: always() 
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "C0C7AJ84X3P", 
+              "text": ":epic: *${{ github.workflow }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+            }
+  
