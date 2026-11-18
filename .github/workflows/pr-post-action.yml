@@ -1,25 +1,19 @@
 name: Pull Request Post-Action
 on:
-  workflow_run:
-    workflows: ["UFS Weather Model PR Test"] # Must match the exact name of Step 1's workflow
-    types:
-      - completed
+  repository_dispatch:
+    types: [node-build-finished]
+  
 
 permissions:
   pull-requests: write
   contents: read
 
 jobs:
-  run-on-runners:
-    name: Execute on Selected Runner
+  post-build:
+    name: Post-Build (${{ github.event.client_payload.runner }})
     if: always()
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: [orion, hercules, gaeac6, ursa]
-    
-    # self-hosted is required, followed by the specific runner label from the matrix
-    runs-on: [self-hosted, "${{ matrix.runner }}"]
+    # Targets ONLY the specific node that just finished upstream
+    runs-on: [self-hosted, "${{ github.event.client_payload.runner }}"]
     permissions:
       id-token: write
       contents: read 
