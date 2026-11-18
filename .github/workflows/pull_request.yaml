@@ -75,4 +75,6 @@ jobs:
             -F client_payload[status]='${{ steps.post-results.outcome }}' \
             -F client_payload[pr_number]='${{ github.event.pull_request.number }}' \
             -F client_payload[head_sha]='${{ github.event.pull_request.head.sha }}' \
-            -F client_payload[run_id]='${{ github.run_id }}'
+            -F client_payload[run_id]='${{ github.run_id }}'\
+            -F client_payload[workflow_name]='${{ github.workflow }}'
+            
