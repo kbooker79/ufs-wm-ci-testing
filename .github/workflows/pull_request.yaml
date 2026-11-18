@@ -62,26 +62,3 @@ jobs:
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           cd ${GITHUB_WORKSPACE}
           .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
-      
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
-          aws-region: us-east-1
-
-      - name: Upload Files to S3 via AWS CLI
-        run: |
-          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
-
-          
-      - name: Send Slack Notification
-        if: always() 
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          method: chat.postMessage
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          payload: |
-            {
-              "channel": "C0C7AJ84X3P", 
-              "text": ":epic: *${{ github.workflow }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-            }
