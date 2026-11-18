@@ -39,6 +39,6 @@ jobs:
           payload: |
             {
               "channel": "C0C7AJ84X3P", 
-              "text": ":epic: *${{ github.workflow }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+              "text": ":epic: *${{ github.event.client_payload.workflow_name }}* completed on *${{ github.event.client_payload.node }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
             }
   
