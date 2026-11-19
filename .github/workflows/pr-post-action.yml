@@ -1,0 +1,44 @@
+name: Pull Request Post-Action
+on:
+  repository_dispatch:
+    types: [node-build-finished]
+  
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  post-build:
+    name: Post-Build (${{ github.event.client_payload.node }})
+    if: always()
+    # Targets ONLY the specific node that just finished upstream
+    runs-on: [self-hosted, "${{ github.event.client_payload.node }}"]
+    permissions:
+      id-token: write
+      contents: read 
+      pull-requests: write
+    steps:
+      - name: Configure AWS Credentials
+        if: always()
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
+          aws-region: us-east-1
+
+      - name: Upload Files to S3 via AWS CLI
+        if: always()
+        run: |
+          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
+      - name: Send Slack Notification
+        if: always() 
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "C0C7AJ84X3P", 
+              "text": ":epic: *${{ github.event.client_payload.workflow_name }}* completed on *${{ github.event.client_payload.node }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+            }
+  

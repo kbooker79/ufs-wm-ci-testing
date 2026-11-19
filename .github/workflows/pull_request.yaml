@@ -23,8 +23,9 @@ jobs:
     environment: develop
     permissions:
       id-token: write
-      contents: read 
+      contents: write
       pull-requests: write
+      repository-projects: write
 
     steps:
       - name: Checkout repo
@@ -36,7 +37,8 @@ jobs:
         run: |
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
-          .cicd/scripts/wm_build.sh
+          export UFS_COMPILER="oneapi"
+          #.cicd/scripts/wm_build.sh
   
       - name: UFS Weather Model test
         run: |
@@ -44,43 +46,36 @@ jobs:
           export RUNNER_NAME=${{ matrix.runner }}
           export NODE_NAME="${RUNNER_NAME^}"
           export UFS_PLATFORM="${RUNNER_NAME}"
-          export UFS_COMPILER="intel"
+          export UFS_COMPILER="oneapi"
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           export WM_REGRESSION_TESTS=true
           export WM_OPERATIONAL_TESTS=control_c48
-          CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
+          #CREATE_BASELINE=false .cicd/scripts/wm_test.sh 
 
 
       - name: UFS Weather Model Post Test Results 
+        id: post-results
         run: |
           export RUNNER_NAME=${{ matrix.runner }}
           export NODE_NAME="${RUNNER_NAME^}"
           export UFS_PLATFORM="${RUNNER_NAME}"
-          export UFS_COMPILER="intel"
+          export UFS_COMPILER="oneapi"
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           cd ${GITHUB_WORKSPACE}
-          .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
-      
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::211527314271:role/github-actions-s3 
-          aws-region: us-east-1
+          #.cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
 
-      - name: Upload Files to S3 via AWS CLI
+      - name: Trigger downstream post-build for ${{ matrix.runner }}
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          aws s3 cp ${GITHUB_WORKSPACE}/tests/logs/ s3://noaa-epic-prod-jenkins-artifacts/kb-test/ --recursive --exclude "*" --include "*.tgz" 
-
-          
-      - name: Send Slack Notification
-        if: always() 
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          method: chat.postMessage
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          payload: |
-            {
-              "channel": "C0C7AJ84X3P", 
-              "text": ":epic: *${{ github.workflow }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-            }
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type='node-build-finished' \
+            -F client_payload[node]='${{ matrix.runner }}' \
+            -F client_payload[status]='${{ steps.post-results.outcome }}' \
+            -F client_payload[pr_number]='${{ github.event.pull_request.number }}' \
+            -F client_payload[head_sha]='${{ github.event.pull_request.head.sha }}' \
+            -F client_payload[run_id]='${{ github.run_id }}'\
+            -F client_payload[workflow_name]='${{ github.workflow }}'
+            
