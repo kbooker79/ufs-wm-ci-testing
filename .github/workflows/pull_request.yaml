@@ -66,17 +66,4 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           #.cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
 
-      - name: Trigger downstream post-build for ${{ matrix.runner }}
-        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-        run: |
-          gh api repos/${{ github.repository }}/dispatches \
-            -f event_type='node-build-finished' \
-            -F client_payload[node]='${{ matrix.runner }}' \
-            -F client_payload[status]='${{ steps.post-results.outcome }}' \
-            -F client_payload[pr_number]='${{ github.event.pull_request.number }}' \
-            -F client_payload[head_sha]='${{ github.event.pull_request.head.sha }}' \
-            -F client_payload[run_id]='${{ github.run_id }}'\
-            -F client_payload[workflow_name]='${{ github.workflow }}'
-            
+  
