@@ -25,8 +25,6 @@ jobs:
       id-token: write
       contents: write
       pull-requests: write
-      actions: write
-      
 
     steps:
       - name: Checkout repo
@@ -39,7 +37,7 @@ jobs:
           echo "Building on runner: ${{ matrix.runner }}"
           export NODE_NAME=${{ matrix.runner }}
           export UFS_COMPILER="oneapi"
-          #.cicd/scripts/wm_build.sh
+          # .cicd/scripts/wm_build.sh
   
       - name: UFS Weather Model test
         run: |
@@ -64,6 +62,17 @@ jobs:
           export UFS_COMPILER="oneapi"
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           cd ${GITHUB_WORKSPACE}
-          #.cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
+          # .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT
 
-  
+      - name: Trigger downstream post-build for ${{ matrix.runner }}
+        if: always()
+        run: |
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type='node-build-finished' \
+            -F client_payload[node]='${{ matrix.runner }}' \
+            -F client_payload[status]='${{ steps.post-results.outcome }}' \
+            -F client_payload[pr_number]='${{ github.event.pull_request.number }}' \
+            -F client_payload[head_sha]='${{ github.event.pull_request.head.sha }}' \
+            -F client_payload[run_id]='${{ github.run_id }}'\
+            -F client_payload[workflow_name]='${{ github.workflow }}'
+            
