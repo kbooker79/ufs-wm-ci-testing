@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   post-build:
-    name: Post-Build (${{ github.workflow.node }})
+    name: Post-Build
     if: always()
     runs-on: self-hosted
     permissions:
