@@ -11,10 +11,9 @@ permissions:
 
 jobs:
   post-build:
-    name: Post-Build (${{ github.workflow.node }})
+    name: Post-Build
     if: always()
-    # Targets ONLY the specific node that just finished upstream
-    runs-on: ["${{ github.workflow.node }}"]
+    runs-on: self-hosted
     permissions:
       id-token: write
       contents: read 
