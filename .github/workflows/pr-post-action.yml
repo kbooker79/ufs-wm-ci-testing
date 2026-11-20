@@ -12,7 +12,12 @@ permissions:
 jobs:
   post-build:
     name: Post-Build
-    if: always()
+    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [orion, hercules, gaeac6, ursa]
+    
     runs-on: [self-hosted, "${{ matrix.runner }}"]
     permissions:
       id-token: write
