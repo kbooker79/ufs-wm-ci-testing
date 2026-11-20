@@ -6,6 +6,8 @@ name: UFS Weather Model PR Test
 # or API.
 on:
   pull_request:
+    types:
+      - opened
     branches:
       - develop
         
