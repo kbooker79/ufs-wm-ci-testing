@@ -13,7 +13,7 @@ jobs:
   post-build:
     name: Post-Build
     if: always()
-    runs-on: self-hosted
+    runs-on: [self-hosted, "${{ matrix.runner }}"]
     permissions:
       id-token: write
       contents: read 
@@ -39,6 +39,6 @@ jobs:
           payload: |
             {
               "channel": "C0C7AJ84X3P", 
-              "text": ":epic: *${{ github.event.workflow_run.name }}* completed on *${{ runner.name }}* with status: *${{ job.status }}*"
+              "text": ":epic: *${{ github.event.workflow_run.name }}* completed on *${{ matrix.runner }}* with status: *${{ job.status }}*"
             }
   
