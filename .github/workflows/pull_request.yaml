@@ -34,6 +34,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
+         ref: ${{ github.event.pull_request.head.sha }}
          submodules: recursive
         
       - name: UFS Weather Model build 
