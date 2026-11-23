@@ -56,6 +56,17 @@ jobs:
           export WM_REGRESSION_TESTS=true
           export WM_OPERATIONAL_TESTS=control_c48
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh
+
+      - name: UFS Weather Model Post Test Results 
+        run: |
+          export RUNNER_NAME=${{ matrix.runner }}
+          export NODE_NAME="${RUNNER_NAME^}"
+          export UFS_PLATFORM="${RUNNER_NAME}"
+          export UFS_COMPILER="oneapi" 
+          [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
+          cd ${GITHUB_WORKSPACE}
+          cat .cicd/scripts/post_test_results.sh
+          GIT_URL="ufs-wm-ci-testing" .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT 
     
           
   
