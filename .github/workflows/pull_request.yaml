@@ -65,10 +65,12 @@ jobs:
           export NODE_NAME="${RUNNER_NAME^}"
           export UFS_PLATFORM="${RUNNER_NAME}"
           export UFS_COMPILER="oneapi" 
+          export CHANGE_ID=${{ github.event.pull_request.number }} 
+          export GIT_URL="ufs-wm-ci-testing"
           [[ -d tests/logs ]] && cd tests/logs && tar --create --gzip --verbose --dereference --file ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz log_${UFS_PLATFORM}/* RegressionTests_${UFS_PLATFORM}.log || cat /dev/null > ../../wm_test_logs-${UFS_PLATFORM}-${UFS_COMPILER}.tgz
           cd ${GITHUB_WORKSPACE}
           cat .cicd/scripts/post_test_results.sh
-          GIT_URL="ufs-wm-ci-testing" .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT 
+          .cicd/scripts/post_test_results.sh $UFS_PLATFORM RT 
     
           
   
