@@ -54,6 +54,7 @@ jobs:
           export ACCNR=epic
           sed  's/workflow="-r"/workflow="-e"/g' -i .cicd/scripts/regression_test.sh || true
           export WM_REGRESSION_TESTS=true
+          export GIT_URL="ufs-wm-ci-testing"
           export WM_OPERATIONAL_TESTS=control_c48
           CREATE_BASELINE=false .cicd/scripts/wm_test.sh
 
