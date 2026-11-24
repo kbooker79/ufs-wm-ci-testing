@@ -63,7 +63,7 @@ function regression_test() {
 		    cd logs/
 		    cp "RegressionTests_${machine_id}.log" "$(dirname "${WORKSPACE}")" #/work/noaa/epic/role-epic/jenkins/workspace
 		    git remote -v
-		    git fetch --no-recurse-submodules origin
+		    git fetch --no-recurse-submodules origin develop
 		    git reset FETCH_HEAD --hard
 		    cd .. && cd .. && cd ..
 		    pwd
@@ -84,7 +84,7 @@ function regression_test() {
 		    cd logs/
 		    cp "RegressionTests_${machine_id}.log" "$(dirname "${WORKSPACE}")" #/work/noaa/epic/role-epic/jenkins/workspace
 		    git remote -v
-		    git fetch --no-recurse-submodules origin
+		    git fetch --no-recurse-submodules origin develop
 		    git reset FETCH_HEAD --hard
 		    cd .. && cd .. && cd ..
 		    pwd
@@ -99,7 +99,7 @@ function regression_test() {
 		    cd logs/
 		    cp "RegressionTests_${machine_id}.log" "$(dirname "${WORKSPACE}")" #/gpfs/f5/epic/scratch/role.epic/jenkins/workspace
 		    git remote -v
-		    git fetch --no-recurse-submodules origin
+		    git fetch --no-recurse-submodules origin develop
 		    git reset FETCH_HEAD --hard
 		    cd .. && cd .. && cd ..
 		    pwd
@@ -115,7 +115,7 @@ function regression_test() {
 		    cd logs/
 		    cp "RegressionTests_${machine_id}.log" "$(dirname "${WORKSPACE}")" #/scratch2/NAGAPE/epic/role.epic/jenkins/workspace
 		    git remote -v
-		    git fetch --no-recurse-submodules origin
+		    git fetch --no-recurse-submodules origin develop
 		    git reset FETCH_HEAD --hard
 		    cd .. && cd .. && cd ..
 		    pwd
@@ -131,7 +131,7 @@ function regression_test() {
 		    cd logs/
 		    cp "RegressionTests_${machine_id}.log" "$(dirname "${WORKSPACE}")" #/glade/derecho/scratch/epicufsrt/jenkins/workspace
 		    git remote -v
-		    git fetch --no-recurse-submodules origin
+		    git fetch --no-recurse-submodules origin develop
 		    git reset FETCH_HEAD --hard
 		    cd .. && cd .. && cd ..
 		    pwd
